@@ -9,16 +9,41 @@ class DataStore {
   public users: User[] = [...users];
 
   // Helper methods for data access
+
+  //Book related methods
   getBookByIsbn(isbn: string): Book | undefined {
     return this.books.find((book) => book.isbn === isbn);
   }
 
-  getRentalsByUserId(userId: string): Rental[] {
-    return this.rentals.filter(
-      (rental) => rental.userId === userId && !rental.returnDate,
+  // Rental related methods
+  getRentalById(rentalId: string): Rental | null {
+    return this.rentals.find((r) => r.id === rentalId) || null;
+  }
+
+  hasActiveRental(userId: string, isbn: string): boolean {
+    return this.rentals.some(
+      (rental) =>
+        rental.userId === userId &&
+        rental.bookIsbn === isbn &&
+        rental.returnDate === undefined,
     );
   }
 
+  getUserActiveRentals(userId: string): Rental[] {
+    return this.rentals.filter(
+      (rental) => rental.userId === userId && rental.returnDate === undefined,
+    );
+  }
+
+  getUserRentalHistory(userId: string): Rental[] {
+    return this.rentals.filter((rental) => rental.userId === userId);
+  }
+
+  addRental(rental: Rental): void {
+    this.rentals.push(rental);
+  }
+
+  // User related methods
   getUserById(userId: string): User | undefined {
     return this.users.find((user) => user.id === userId);
   }
