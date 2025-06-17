@@ -1,6 +1,6 @@
 # Library API
 
-Simple REST API built using Node.js, Express, and TypeScript allows CRUD operations on data stored transiently on the server.
+This API is a simple REST API built using Node.js, Express, and TypeScript allows CRUD operations on data stored transiently on the server.
 
 - [Installation](#installation)
 - [API Endpoints](#api-endpoints)
