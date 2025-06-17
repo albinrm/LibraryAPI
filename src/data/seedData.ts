@@ -61,7 +61,7 @@ export const books: Book[] = [
     title: "The Lord of the Rings",
     author: "J.R.R. Tolkien",
     publishedYear: 1954,
-    totalCopies: 1,
+    totalCopies: 0,
     description:
       "The epic fantasy adventure about the hobbit Frodo who must destroy the One Ring to save Middle-earth from the forces of evil.",
   },

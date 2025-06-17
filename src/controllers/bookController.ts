@@ -10,12 +10,13 @@ export const getAllBooks = (req: Request, res: Response): void => {
 
 export const getBookById = (req: Request, res: Response): void => {
   const { bookId } = req.params;
-  const book = bookService.getBookByIsbn(bookId);
+  const result = bookService.validateAndGetBook(bookId);
 
-  if (!book) {
-    res.status(404).json({ error: "Book not found" });
+  if (!result.success) {
+    const statusCode = result.error === "Book not found" ? 404 : 400;
+    res.status(statusCode).json({ error: result.error });
     return;
   }
 
-  res.json({ book });
+  res.json({ book: result.book });
 };

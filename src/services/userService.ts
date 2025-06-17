@@ -9,12 +9,13 @@ export interface UserRentedBook {
 }
 
 export class UserService {
-  getUserRentedBooks(userId: string): {
+
+  // Validates the user ID format and checks if  user exists in data store
+  validateUser(userId: string): {
     success: boolean;
-    data?: UserRentedBook[];
     error?: string;
   } {
-    // Validate userId format
+    // User ID format validation
     if (!userId || userId.trim() === "") {
       return { success: false, error: "User ID is required" };
     }
@@ -22,6 +23,22 @@ export class UserService {
     // Check if user exists
     if (!dataStore.isValidUser(userId)) {
       return { success: false, error: "Invalid user ID" };
+    }
+
+    return { success: true };
+  }
+
+
+
+  getUserRentedBooks(userId: string): {
+    success: boolean;
+    data?: UserRentedBook[];
+    error?: string;
+  } {
+    // Validate user 
+    const userValidation = this.validateUser(userId);
+    if (!userValidation.success) {
+      return { success: false, error: userValidation.error };
     }
 
     // Get all active rentals for this user
@@ -47,7 +64,4 @@ export class UserService {
     return { success: true, data: rentedBooks };
   }
 
-  userExists(userId: string): boolean {
-    return dataStore.isValidUser(userId);
-  }
 }

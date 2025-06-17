@@ -1,31 +1,33 @@
 import { dataStore } from "../data/storage";
 import { Rental } from "../models/Rental";
 import { BookService } from "./bookService";
+import { UserService } from "./userService";
 
 export class RentalService {
   private bookService = new BookService();
+  private userService = new UserService();
 
   createRental(
     isbn: string,
     userId: string,
   ): { success: boolean; rentalId?: string; error?: string } {
-    if (!isbn || isbn.trim() === "") {
-      return { success: false, error: "ISBN is required" };
+    // Validate user using UserService
+    const userValidation = this.userService.validateUser(userId);
+    if (!userValidation.success) {
+      return { success: false, error: userValidation.error };
     }
 
-    if (!userId || userId.trim() === "") {
-      return { success: false, error: "User ID is required" };
+    // Validate and get book using BookService
+    const bookValidation = this.bookService.validateAndGetBook(isbn);
+    if (!bookValidation.success) {
+      return { success: false, error: bookValidation.error };
     }
 
-    // Check if user is valid
-    if (!dataStore.isValidUser(userId)) {
-      return { success: false, error: "Invalid user ID" };
-    }
+    const book = bookValidation.book!;
 
-    // Check if book exists (delegate to BookService)
-    const book = this.bookService.getBookByIsbn(isbn);
-    if (!book) {
-      return { success: false, error: "Book not found" };
+    // Check if copies are available
+    if (book.availableCopies <= 0) {
+      return { success: false, error: "No copies available for rent" };
     }
 
     // Check if copies are available (delegate to BookService)
