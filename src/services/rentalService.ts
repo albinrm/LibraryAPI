@@ -9,6 +9,32 @@ export class RentalService {
     isbn: string,
     userId: string,
   ): { success: boolean; rentalId?: string; error?: string } {
+    if (!isbn || isbn.trim() === "") {
+      return { success: false, error: "ISBN is required" };
+    }
+
+    if (!userId || userId.trim() === "") {
+      return { success: false, error: "User ID is required" };
+    }
+
+    // Check if user is valid
+    if (!dataStore.isValidUser(userId)) {
+      return { success: false, error: "Invalid user ID" };
+    }
+
+    // Check if book exists (delegate to BookService)
+    const book = this.bookService.getBookByIsbn(isbn);
+    if (!book) {
+      return { success: false, error: "Book not found" };
+    }
+
+    // Check if copies are available (delegate to BookService)
+    const availableCopies = this.bookService.getAvailableCopies(isbn);
+    if (availableCopies <= 0) {
+      return { success: false, error: "No copies available for rent" };
+    }
+
+    // Check if user already has an active rental for this book
     if (dataStore.hasActiveRental(userId, isbn)) {
       return {
         success: false,
